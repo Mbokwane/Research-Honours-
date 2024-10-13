@@ -1,5 +1,5 @@
 ---
-title: "YHOOO wow"
+title: DIABETIC RETINOPATHY
 author: "Mbokwane Agnes Mohlakoana"
 date: "2024-10-12"
 output:
