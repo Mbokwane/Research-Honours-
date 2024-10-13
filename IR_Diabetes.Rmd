@@ -1,0 +1,59 @@
+---
+title: "GET PLOTS"
+author: "Mbokwane Agnes Mohlakoana"
+date: "2024-10-12"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(icenReg)
+data("IR_diabetes")
+str(IR_diabetes)
+fit_wei <- ic_par(cbind(left, right) ~ gender,
+              data = IR_diabetes,
+              model = "aft",
+              dist = "weibull")
+fit_exp <- ic_par(cbind(left, right) ~ gender,
+              data = IR_diabetes,
+              model = "aft",
+              dist = "exponential")
+fit_log <- ic_par(cbind(left, right) ~ gender,
+               data = IR_diabetes,
+               model = "aft",
+               dist = "loglogistic")
+```
+
+```{r}
+par(mfrow=c(1,1))
+kaplan=survfit(Surv(IR_diabetes$left,IR_diabetes$right,  type = 'interval2') ~ IR_diabetes$gender,data=IR_diabetes)
+kaplan.surv=kaplan$surv
+kaplan.time=kaplan$time
+log.log.kmestimates=log(-log(kaplan.surv))
+log.time=log(kaplan.time)
+plot(log.log.kmestimates ~ log.time, 
+     main = "Weibull Model Check for IR Diabetes", 
+     xlab = "log(Time)", 
+     ylab = "logLogSurvEst")
+```
+
+
+```{r}
+par(mfrow=c(1,1))
+kaplan=survfit(Surv(IR_diabetes$left,IR_diabetes$right,  type = 'interval2') ~ IR_diabetes$gender,data=IR_diabetes)
+kaplan.surv=kaplan$surv
+kaplan.time=kaplan$time
+logit.kmestimates = log(kaplan.surv / (1 - kaplan.surv))
+log.time=log(kaplan.time)
+plot(logit.kmestimates ~ log.time, 
+     main = "Log-Logistic Model Check for IR Diabetes", 
+     xlab = "log(Time)", 
+     ylab = "log(Survival Odds)")
+
+```
+

@@ -1,0 +1,62 @@
+---
+title: "YHOOO wow"
+author: "Mbokwane Agnes Mohlakoana"
+date: "2024-10-12"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(survival)
+library(icenReg)
+data("diabetic")
+#data("IR_diabetes")
+#head(cs2ic(diabetic$time, diabetic$status))
+#IR_diabetic<-cs2ic(diabetic$time, diabetic$status)
+diabetic$age <- scale(diabetic$age)
+diabetic$left <- cs2ic(diabetic$time, diabetic$status)[,1]
+diabetic$right <- cs2ic(diabetic$time, diabetic$status)[,2]
+wei_fit<- ic_par(Surv(left, right, type = 'interval2') ~ eye+age+trt+risk+laser,
+                    data =diabetic,model="aft", dist = 'weibull')
+exp_fit<- ic_par(Surv(left, right, type = 'interval2') ~ eye+age+trt+risk+laser,
+             data =diabetic,model="aft", dist = 'exponential')
+log_fit <- ic_par(Surv(left, right, type = 'interval2') ~ eye+age+trt+risk+laser,
+                  data =diabetic,model="aft", dist = 'loglogistic') 
+```
+
+```{r}
+par(mfrow=c(1,1))
+kaplan=survfit(Surv(time, status) ~ 1,data=diabetic)
+kaplan.surv=kaplan$surv
+kaplan.time=kaplan$time
+log.log.kmestimates=log(-log(kaplan.surv))
+log.time=log(kaplan.time)
+plot(log.log.kmestimates ~ log.time,main = "Weibull Model Check for Diabetic", 
+     xlab = "log(Time)", 
+     ylab = "logLogSurvEst")
+lm.model=lm(log.log.kmestimates ~ log.time)
+abline(lm.model)
+ 
+
+
+```
+
+```{r}
+kaplan = survfit(Surv(time, status) ~ 1, data = diabetic)
+kaplan.surv = kaplan$surv
+kaplan.time = kaplan$time
+logit.kmestimates = log(kaplan.surv / (1 - kaplan.surv))
+log.time = log(kaplan.time)
+plot(logit.kmestimates ~ log.time, 
+     main = "Log-Logistic Model Check for Diabetic", 
+     xlab = "log(Time)", 
+     ylab = "log(Survival Odds)")
+lm.model = lm(logit.kmestimates ~ log.time)
+abline(lm.model)
+```
+
